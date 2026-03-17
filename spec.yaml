@@ -1,13 +1,14 @@
 openapi: 3.0.3
 info:
-  title: Demo Tasks API
+  title: Demo Task API
   version: 1.0.0
   description: |
     A generic OpenAPI 3.0 specification for demo purposes.
     It includes basic CRUD operations, pagination, filtering,
     authentication, and common response structures.
+
 servers:
-  - url: https://api.demoexample.com/v2
+  - url: https://api.demoexample.com/v1
     description: Production
   - url: https://sandbox.demoexample.com/v1
     description: Sandbox
@@ -87,7 +88,141 @@ paths:
                 $ref: '#/components/schemas/TaskListResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-    /tasks/{taskId}/history:
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+    post:
+      tags:
+        - Tasks
+      summary: Create a task
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+            examples:
+              default:
+                value:
+                  title: "Follow up with customer"
+                  description: "Send pricing details and next steps"
+                  status: open
+                  assignee: "Alex"
+                  dueDate: "2026-03-25"
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  /tasks/{taskId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: Unique task identifier
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags:
+        - Tasks
+      summary: Get a task by ID
+      operationId: getTask
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Tasks
+      summary: Replace a task
+      operationId: replaceTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    patch:
+      tags:
+        - Tasks
+      summary: Partially update a task
+      operationId: patchTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchTaskRequest'
+      responses:
+        '200':
+          description: Task partially updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Tasks
+      summary: Delete a task
+      operationId: deleteTask
+      responses:
+        '204':
+          description: Task deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /tasks/{taskId}/history:
     get:
       tags:
         - Tasks
@@ -117,127 +252,8 @@ paths:
                       $ref: '#/components/schemas/TaskHistoryEvent'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-          
-    post:
-      tags:
-        - Tasks
-      summary: Create a task
-      operationId: createTask
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTaskRequest'
-            examples:
-              default:
-                value:
-                  title: "Follow up with customer"
-                  description: "Send pricing details and next steps"
-                  status: "open"
-                  assignee: "Alex"
-                  dueDate: "2026-03-25"
-      responses:
-        '201':
-          description: Task created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-
-  /tasks/{taskId}:
-    parameters:
-      - name: taskId
-        in: path
-        required: true
-        description: Unique task identifier
-        schema:
-          type: string
-          format: uuid
-
-    get:
-      tags:
-        - Tasks
-      summary: Get a task by ID
-      operationId: getTask
-      responses:
-        '200':
-          description: Task details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-
-    put:
-      tags:
-        - Tasks
-      summary: Replace a task
-      operationId: replaceTask
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateTaskRequest'
-      responses:
-        '200':
-          description: Task updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-
-    patch:
-      tags:
-        - Tasks
-      summary: Partially update a task
-      operationId: patchTask
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchTaskRequest'
-      responses:
-        '200':
-          description: Task partially updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Task'
-        '400':
-          $ref: '#/components/responses/BadRequestError'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-
-    delete:
-      tags:
-        - Tasks
-      summary: Delete a task
-      operationId: deleteTask
-      responses:
-        '204':
-          description: Task deleted
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
         '404':
           $ref: '#/components/responses/NotFoundError'
 
@@ -256,33 +272,6 @@ components:
         - in_progress
         - completed
         - archived
-    
-    TaskHistoryEvent:
-      type: object
-      required:
-        - field
-        - oldValue
-        - newValue
-        - changedAt
-      properties:
-        field:
-          type: string
-          example: status
-        oldValue:
-          type: string
-          nullable: true
-          example: open
-        newValue:
-          type: string
-          nullable: true
-          example: in_progress
-        changedAt:
-          type: string
-          format: date-time
-          example: "2026-03-17T12:30:00Z"
-        changedBy:
-          type: string
-          example: Alex
 
     Task:
       type: object
@@ -383,6 +372,33 @@ components:
           format: date
           nullable: true
 
+    TaskHistoryEvent:
+      type: object
+      required:
+        - field
+        - oldValue
+        - newValue
+        - changedAt
+      properties:
+        field:
+          type: string
+          example: status
+        oldValue:
+          type: string
+          nullable: true
+          example: open
+        newValue:
+          type: string
+          nullable: true
+          example: in_progress
+        changedAt:
+          type: string
+          format: date-time
+          example: "2026-03-17T12:30:00Z"
+        changedBy:
+          type: string
+          example: Alex
+
     TaskListResponse:
       type: object
       required:
@@ -458,17 +474,6 @@ components:
                 message: The request payload is invalid.
                 details:
                   - title is required
-    ForbiddenError:
-      description: Access denied
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          examples:
-            forbidden:
-              value:
-                error: forbidden
-                message: You do not have permission to access this resource.
 
     UnauthorizedError:
       description: Authentication required or invalid token
@@ -481,6 +486,18 @@ components:
               value:
                 error: unauthorized
                 message: Missing or invalid bearer token.
+
+    ForbiddenError:
+      description: Access denied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            forbidden:
+              value:
+                error: forbidden
+                message: You do not have permission to access this resource.
 
     NotFoundError:
       description: Resource not found
