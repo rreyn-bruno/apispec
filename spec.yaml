@@ -87,7 +87,39 @@ paths:
                 $ref: '#/components/schemas/TaskListResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-
+    /tasks/{taskId}/history:
+    get:
+      tags:
+        - Tasks
+      summary: Get task history
+      operationId: getTaskHistory
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: Unique task identifier
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskHistoryEvent'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+          
     post:
       tags:
         - Tasks
@@ -224,6 +256,33 @@ components:
         - in_progress
         - completed
         - archived
+    
+    TaskHistoryEvent:
+      type: object
+      required:
+        - field
+        - oldValue
+        - newValue
+        - changedAt
+      properties:
+        field:
+          type: string
+          example: status
+        oldValue:
+          type: string
+          nullable: true
+          example: open
+        newValue:
+          type: string
+          nullable: true
+          example: in_progress
+        changedAt:
+          type: string
+          format: date-time
+          example: "2026-03-17T12:30:00Z"
+        changedBy:
+          type: string
+          example: Alex
 
     Task:
       type: object
