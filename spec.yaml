@@ -7,7 +7,7 @@ info:
     It includes basic CRUD operations, pagination, filtering,
     authentication, and common response structures.
 servers:
-  - url: https://api.demoexample.com/v1
+  - url: https://api.demoexample.com/v2
     description: Production
   - url: https://sandbox.demoexample.com/v1
     description: Sandbox
