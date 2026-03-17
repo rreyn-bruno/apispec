@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Demo Task API
+  title: Demo Tasks API
   version: 1.0.0
   description: |
     A generic OpenAPI 3.0 specification for demo purposes.
