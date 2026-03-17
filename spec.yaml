@@ -399,6 +399,17 @@ components:
                 message: The request payload is invalid.
                 details:
                   - title is required
+    ForbiddenError:
+      description: Access denied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            forbidden:
+              value:
+                error: forbidden
+                message: You do not have permission to access this resource.
 
     UnauthorizedError:
       description: Authentication required or invalid token
